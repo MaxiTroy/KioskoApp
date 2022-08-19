@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import useKiosco from "../hooks/useKiosco";
 import { formatMoney } from "../helpers";
+import { PRERENDER_REVALIDATE_ONLY_GENERATED_HEADER } from "next/dist/server/api-utils";
 
 const ModalProduct = () => {
-  const { product, handleChangeModal } = useKiosco();
+  const { product, handleChangeModal, handleAddOrder, order } = useKiosco();
   const [amount, setAmount] = useState(1);
+  const [edit, setEdit] = useState(false);
+
+  useEffect(() => {
+    if (order.some((orderState) => orderState.id === product.id)) {
+      const editProduct = order.find(
+        (orderState) => orderState.id === product.id
+      );
+      setEdit(true);
+      setAmount(editProduct.amount);
+    }
+  }, [product, order]);
   return (
     <div className="md:flex gap-10">
       <div className="md:w-1/3">
@@ -89,6 +101,14 @@ const ModalProduct = () => {
             </svg>
           </button>
         </div>
+
+        <button
+          type="button"
+          className="bg-indigo-600 hover:bg-indigo-800 px-5 py-2 mt-2 text-white font-bold uppercase rounded"
+          onClick={() => handleAddOrder({ ...product, amount })}
+        >
+          {edit ? "Guardar Cambios" : "Añadir al pedido"}
+        </button>
       </div>
     </div>
   );

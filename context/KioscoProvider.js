@@ -8,6 +8,7 @@ const KioscoProvider = ({ children }) => {
   const [currentCategory, setCurrentCategory] = useState({});
   const [product, setProduct] = useState({});
   const [modal, setModal] = useState(false);
+  const [order, setOrder] = useState([]);
 
   const getCategories = async () => {
     try {
@@ -39,6 +40,18 @@ const KioscoProvider = ({ children }) => {
     setModal(!modal);
   };
 
+  const handleAddOrder = (product) => {
+    if (order.some((productState) => productState.id === product.id)) {
+      const updateOrder = order.map((productState) =>
+        productState.id === product.id ? product : productState
+      );
+      setOrder(updateOrder);
+    } else {
+      setOrder([...order, product]);
+    }
+    setModal(false);
+  };
+
   return (
     <KioscoContext.Provider
       value={{
@@ -49,6 +62,8 @@ const KioscoProvider = ({ children }) => {
         hanldeSetProduct,
         modal,
         handleChangeModal,
+        order,
+        handleAddOrder,
       }}
     >
       {children}
