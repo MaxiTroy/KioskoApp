@@ -2,6 +2,7 @@ import Head from "next/head";
 import Sidebar from "../components/Sidebar";
 import Modal from "react-modal";
 import ModalProduct from "../components/ModalProduct";
+import Steps from "../components/Steps";
 import useKiosco from "../hooks/useKiosco";
 import { ToastContainer } from "react-toastify";
 
@@ -36,7 +37,10 @@ export default function Layout({ children, pagina }) {
         </aside>
 
         <main className="md:w-8/12 xl:w-3/4 2xl:w-4/5 h-screen overflow-y-scroll">
-          <div className="p-10">{children}</div>
+          <div className="p-10">
+            <Steps />
+            {children}
+          </div>
         </main>
       </div>
       {modal && (
