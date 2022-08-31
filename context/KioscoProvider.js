@@ -11,6 +11,8 @@ const KioscoProvider = ({ children }) => {
   const [product, setProduct] = useState({});
   const [modal, setModal] = useState(false);
   const [order, setOrder] = useState([]);
+  const [name, setName] = useState("");
+  const [total, setTotal] = useState(0);
   const router = useRouter();
 
   const getCategories = async () => {
@@ -29,6 +31,14 @@ const KioscoProvider = ({ children }) => {
   useEffect(() => {
     setCurrentCategory(categories[0]);
   }, [categories]);
+
+  useEffect(() => {
+    const newTotal = order.reduce(
+      (acc, item) => item.price * item.amount + acc,
+      0
+    );
+    setTotal(newTotal);
+  }, [order]);
 
   const handleClickCategory = (id) => {
     const category = categories.find((item) => item.id === id);
@@ -69,6 +79,32 @@ const KioscoProvider = ({ children }) => {
     setOrder(updateOrder);
   };
 
+  const confirmOrder = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post("/api/orders", {
+        order,
+        name,
+        total,
+        date: Date.now().toString(),
+      });
+
+      setCurrentCategory(categories[0]);
+      setOrder([]);
+      setName("");
+      setTotal(0);
+
+      toast.success("Pedido realizado correctamente");
+
+      setTimeout(() => {
+        router.push("/");
+      }, 2500);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <KioscoContext.Provider
       value={{
@@ -83,6 +119,10 @@ const KioscoProvider = ({ children }) => {
         handleAddOrder,
         handleUpdateAmount,
         handleDeleteProduct,
+        name,
+        setName,
+        confirmOrder,
+        total,
       }}
     >
       {children}
